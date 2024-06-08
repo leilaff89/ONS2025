@@ -440,7 +440,6 @@ public class EON_QFDDM implements RA{
 
                             //Delay tolerant
                             cp.delayFlow(flow);
-                            DBManager.writeResult(flow, 1);
 
                         } else {
 
@@ -504,9 +503,11 @@ public class EON_QFDDM implements RA{
         if (f.calcDegradation() < 1 - f.getServiceInfo().getDegradationTolerance()) {
             //System.out.println("Dropou com " + f.calcDegradation() + " precisava de: " + (1- f.getServiceInfo().getDegradationTolerance()));
             cp.dropFlow(f);
+            DBManager.writeResult(f, 0);
         }else{
             //System.out.println("Restaurou " + f.calcDegradation());
             cp.restoreFlow(f);  
+            DBManager.writeResult(f, 1);
             
         }    
        

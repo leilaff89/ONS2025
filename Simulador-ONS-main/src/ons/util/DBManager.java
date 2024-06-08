@@ -293,7 +293,7 @@ public class DBManager {
             for(int i = 0; i < adjMatrix.length; i++){
                 for(int j = 0; j<adjMatrix[i].length; j++){
                     if(adjMatrix[i][j] == null) continue;
-                        pst = conexao.prepareStatement("INSERT INTO pt (id,src,dst,slotsLivres,slots,time,event) VALUES (?,?,?,?,?,?,?)");
+                        pst = conexao.prepareStatement("INSERT INTO pt (id,src,dst,slotsLivres,slots,time,event,interrupted) VALUES (?,?,?,?,?,?,?,?)");
                         
                         EONLink link = (EONLink) adjMatrix[i][j];
                         pst.setInt(1,link.getID());
@@ -310,6 +310,7 @@ public class DBManager {
                         pst.setString(5,aux);
                         pst.setFloat(6, SimulationRunner.timer);
                         pst.setInt(7, TrafficGenerator.eventNum);
+                        pst.setInt(8, link.isIsInterupted()?0:1);
                         
                         
                         pst.executeUpdate();
