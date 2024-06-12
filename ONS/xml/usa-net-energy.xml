@@ -5,11 +5,11 @@
      <!--rate in Mbps 1000Mbps = 1Gbps | 'cos' represents the number of service classes-->
     <traffic calls="100000" cos="4" load="50" statisticStart="0">
         <!--'cos' here starts with '0'-->
-        <calls cos="0" holding-time="60" rate="40000" weight="1"/>
-        <calls cos="1" holding-time="60" rate="50000" weight="1"/>
-        <calls cos="2" holding-time="60" rate="60000" weight="1"/>
-        <calls cos="3" holding-time="60" rate="70000" weight="1"/>
-        <calls cos="3" holding-time="60" rate="80000" weight="1"/>
+        <calls cos="0" holding-time="1" rate="40000" weight="1"/>
+        <calls cos="1" holding-time="1" rate="50000" weight="1"/>
+        <calls cos="2" holding-time="1" rate="60000" weight="1"/>
+        <calls cos="3" holding-time="1" rate="70000" weight="1"/>
+        <calls cos="3" holding-time="1" rate="80000" weight="1"/>
     </traffic>
     
     <QoS>		
