@@ -221,7 +221,7 @@ public class EON_QFDDM implements RA{
     }    
     
     public boolean addLightPath2(Flow flow,int[] links,int firstSlot,int requiredSlots){
-        
+        if(links == null) return false;
         ArrayList<Integer> nodes = new ArrayList<Integer>();
         long id;
         LightPath[] lps = new LightPath[1];     
@@ -431,7 +431,7 @@ public class EON_QFDDM implements RA{
                             break;
                         }
                     }
-
+                   
                     if (teste == null || !addLightPath2(flow,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration())) {
                         
                         allFlows.remove(flow);

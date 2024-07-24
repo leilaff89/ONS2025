@@ -84,6 +84,7 @@ public class Model {
     public int[] getLinks() {
         List<Integer> linksList = new ArrayList<Integer>();
         String linksStrList[] = links.substring(1,links.length()-1).replaceAll("\\s", "").split(",");
+        if(linksStrList[0] == "") return null;
         for(String a: linksStrList)
         {
             linksList.add(Integer.parseInt(a));
@@ -93,6 +94,8 @@ public class Model {
     
     public int getFirstSlot() {
         String slot[] = slotsSelec.split(",");
+        System.out.println(slot[0]);
+        if(slot[0].equals("\"[]\"")) return -1;
         return Integer.parseInt(slot[0]);
     }
 
