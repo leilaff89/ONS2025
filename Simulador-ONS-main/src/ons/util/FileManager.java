@@ -199,7 +199,8 @@ public class FileManager {
         }
     }
     
-    public static void writeFlows(ArrayList<Flow> flows, String name) {
+    public static void writeFlows(ArrayList<Flow> flows, String name,ControlPlaneForRA cp) {
+        
         
         
         try{
@@ -209,6 +210,8 @@ public class FileManager {
         csvWriter.append("ID,Carga na Rede, Nó Fonte, Nó Destino, Rate, Largura de banda total, Largura de banda para restauração,Banda total, Banda transmitida, Tempo total para transmissão, Tempo transmitido, Tempo restante para transmissão, Classe, Total de slots, Slots necessários para restauração, Caminhos, Degradação%, Delay%, Delay, Weight, Modulation \n");
         
         for (Flow flow : flows) {
+            
+            ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(cp.getPT().getWeightedGraph(), flow.getSource(), flow.getDestination(), 10);
             
             csvWriter.append(flow.getID() + ","); 
             csvWriter.append(TrafficGenerator.getLoad()+",");
@@ -225,8 +228,7 @@ public class FileManager {
             csvWriter.append(flow.getCOS() + ",");
             csvWriter.append(flow.getRequiredSlots2()+",");
             csvWriter.append(flow.getRequiredSlotsRestauration2()+",");
-            ArrayList<Integer>[] paths = flow.getPaths();
-            
+           
             for(int j = 0; j < paths.length; j++){
                 csvWriter.append(paths[j].toString().replace(", ", ";"));
                 if(j<paths.length-1) csvWriter.append(";");

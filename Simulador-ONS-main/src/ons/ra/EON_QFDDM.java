@@ -69,6 +69,8 @@ public class EON_QFDDM implements RA{
        ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(cp.getPT().getWeightedGraph(), flow.getSource(), flow.getDestination(), 10);
        flow.setPaths(paths);  
         
+    
+       
         //this.graph = this.getPostDisasterGraph(cp.getPT());
         
         OUTER:
@@ -221,7 +223,6 @@ public class EON_QFDDM implements RA{
     }    
     
     public boolean addLightPath2(Flow flow,int[] links,int firstSlot,int requiredSlots){
-        if(links == null) return false;
         ArrayList<Integer> nodes = new ArrayList<Integer>();
         long id;
         LightPath[] lps = new LightPath[1];     
@@ -327,8 +328,8 @@ public class EON_QFDDM implements RA{
         allFlows.addAll(interuptedFlows);
         allFlows.addAll(survivedFlows);
         
-        FileManager.writeFlows(survivedFlows,"flowsSobreviventes"+Main.numSim+".csv");
-        FileManager.writeFlows(interuptedFlows,"flowsInterrompidos"+Main.numSim+".csv");
+        FileManager.writeFlows(survivedFlows,"flowsSobreviventes"+Main.numSim+".csv",cp);
+        FileManager.writeFlows(interuptedFlows,"flowsInterrompidos"+Main.numSim+".csv",cp);
         FileManager.writeVT(cp,Main.numSim+"");
                 DBManager.writeFlows(survivedFlows,true);
                 DBManager.writeFlows(interuptedFlows,false);
@@ -431,8 +432,8 @@ public class EON_QFDDM implements RA{
                             break;
                         }
                     }
-                   
-                    if (teste == null || !addLightPath2(flow,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration())) {
+                    
+                    if (teste == null || teste.getLinks() == null  || !addLightPath2(flow,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration())) {
                         
                         allFlows.remove(flow);
                         if (flow.isDelayTolerant()) {

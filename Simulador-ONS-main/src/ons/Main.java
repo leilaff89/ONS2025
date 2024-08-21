@@ -50,10 +50,10 @@ public class Main {
         String file = args[1];
         
         while(numSim<totSim){
-            //if(numSim%(totSim/10) == 0){
+            if(numSim%(totSim/10) == 0){
                 load+=20;
                 FileManager.changeLoad(load,file);
-            //}
+            }
             execute(newArgs);
             numSim++;
         }
