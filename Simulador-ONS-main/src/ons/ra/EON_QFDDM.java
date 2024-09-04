@@ -331,8 +331,8 @@ public class EON_QFDDM implements RA{
         FileManager.writeFlows(survivedFlows,"flowsSobreviventes"+Main.numSim+".csv",cp);
         FileManager.writeFlows(interuptedFlows,"flowsInterrompidos"+Main.numSim+".csv",cp);
         FileManager.writeVT(cp,Main.numSim+"");
-                DBManager.writeFlows(survivedFlows,true);
-                DBManager.writeFlows(interuptedFlows,false);
+                DBManager.writeFlows(survivedFlows,true,cp);
+                DBManager.writeFlows(interuptedFlows,false,cp);
 
         DBManager.writeVT(cp);
         DBManager.writePT(cp);
