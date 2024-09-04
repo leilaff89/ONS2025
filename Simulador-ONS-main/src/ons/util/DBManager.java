@@ -47,7 +47,7 @@ public class DBManager {
         }
     }
     
-    public static void writeFlows(ArrayList<Flow> flows, boolean interrompido){
+    public static void writeFlows(ArrayList<Flow> flows, boolean interrompido, ControlPlaneForRA cp){
         Connection conexao = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -56,6 +56,22 @@ public class DBManager {
         
         for (Flow flow : flows) {
             try{
+                WeightedGraph g = cp.getPT().getWeightedGraph();
+                Link[][] adjMatrix = cp.getPT().getAdjMatrix();
+                for(int i = 0; i < adjMatrix.length; i++){
+                    for(int j = 0; j<adjMatrix[i].length; j++){
+                        if(adjMatrix[i][j] == null){
+                            g.setWeight(i, j, 0);
+                            continue;
+                        };
+                        if(adjMatrix[i][j].isIsInterupted()){
+                            g.setWeight(i, j, 0);
+                        }
+                        
+                    }
+                }
+                
+                ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(g, flow.getSource(), flow.getDestination(), 10);
                 pst = conexao.prepareStatement("INSERT INTO flow (id,networkLoad,src,dst,rate,bwReq,bwReqRestauration,totalBand,transmittedBand,duration,transmittedTime,tempoFaltante,classe,reqSlots,reqSlotsRestauration,caminhos,degradationTolerance,delayTolerance,delayToleranceTotal,weight,modulation,time, event, interrompido) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             
                 pst.setLong(1, flow.getID());
@@ -74,15 +90,18 @@ public class DBManager {
                 pst.setInt(14, flow.getRequiredSlots2());
                 pst.setInt(15, flow.getRequiredSlotsRestauration2());
                 
-                ArrayList<Integer>[] paths = flow.getPaths();
+                
                 
                 String path = "";
             
-                for(int j = 0; j < paths.length; j++){
-                    path = path + paths[j].toString().replace(", ", ",");
+                if(paths.length > 0){
+                    for(int j = 0; j < paths.length; j++){
+                        path = path + paths[j].toString().replace(", ", ",");
+                    }
+
+                    path = path.replace("]", "],");
+                    path = path.substring(0, path.length()-1);
                 }
-                path = path.replace("]", "],");
-                path = path.substring(0, path.length()-1);
                 pst.setString(16, path);
                 pst.setFloat(17, flow.getServiceInfo().getDegradationTolerance());
                 pst.setFloat(18, flow.getServiceInfo().getDelayTolerance());
@@ -289,11 +308,12 @@ public class DBManager {
         System.out.println(conexao);
         
         try{
+            WeightedGraph g = cp.getPT().getWeightedGraph();
             Link[][] adjMatrix = cp.getPT().getAdjMatrix();
             for(int i = 0; i < adjMatrix.length; i++){
                 for(int j = 0; j<adjMatrix[i].length; j++){
                     if(adjMatrix[i][j] == null) continue;
-                        pst = conexao.prepareStatement("INSERT INTO pt (id,src,dst,slotsLivres,slots,time,event,interrupted) VALUES (?,?,?,?,?,?,?,?)");
+                        pst = conexao.prepareStatement("INSERT INTO pt (id,src,dst,slotsLivres,slots,time,event,interrupted, weight) VALUES (?,?,?,?,?,?,?,?)");
                         
                         EONLink link = (EONLink) adjMatrix[i][j];
                         pst.setInt(1,link.getID());
@@ -311,6 +331,7 @@ public class DBManager {
                         pst.setFloat(6, SimulationRunner.timer);
                         pst.setInt(7, TrafficGenerator.eventNum);
                         pst.setInt(8, link.isIsInterupted()?0:1);
+                        pst.setDouble(9, g.getWeight(i, j));
                         
                         
                         pst.executeUpdate();
