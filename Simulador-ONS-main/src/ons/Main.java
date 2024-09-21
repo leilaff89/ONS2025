@@ -38,6 +38,7 @@ public class Main {
      * 
      * @param args the command line arguments
      */
+    public static int epoca = 10;
     public static int totSim = 10;
     public static int numSim = 0;
     public static int load = 30;
@@ -49,13 +50,17 @@ public class Main {
         System.arraycopy(args, 1, newArgs, 0, newArgs.length);
         String file = args[1];
         
-        while(numSim<totSim){
-            if(numSim%(totSim/10) == 0){
-                load+=20;
-                FileManager.changeLoad(load,file);
+        for(int i = 0; i < epoca; i++){
+            load = 30;
+            numSim = 0;
+            while(numSim<totSim){
+                if(numSim%(totSim/10) == 0){
+                    load+=20;
+                    FileManager.changeLoad(load,file);
+                }
+                execute(newArgs);
+                numSim++;
             }
-            execute(newArgs);
-            numSim++;
         }
         
         

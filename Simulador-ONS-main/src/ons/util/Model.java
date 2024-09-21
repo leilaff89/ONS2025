@@ -21,6 +21,7 @@ public class Model {
     private String caminho;
     private String slotsSelec;
     private String links;
+    private int modulation;
 
     
     public int getId() {
@@ -116,6 +117,15 @@ public class Model {
     }
     // Construtor, getters e setters aqui...
 
+    public int getModulation(){
+        return this.modulation;
+    }
+    
+    public void setModulation(int modulation)
+    {
+        this.modulation = modulation;
+    }
+    
     @Override
     public String toString() {
         // Implemente o método toString conforme necessário para representar os dados da classe

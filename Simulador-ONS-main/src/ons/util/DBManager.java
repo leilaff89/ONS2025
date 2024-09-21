@@ -259,7 +259,7 @@ public class DBManager {
             System.out.println(conexao);
 
             // Consulta SQL SELECT
-            String consultaSQL = "SELECT id, links, src, dst, bwReqRestauration, tempoFaltante, reqSlotsRestauration, caminho, slotsSelec FROM model";
+            String consultaSQL = "SELECT id, links, src, dst, bwReqRestauration, tempoFaltante, reqSlotsRestauration, caminho, slotsSelec, modulation FROM model";
             pst = conexao.prepareStatement(consultaSQL);
 
             // Executar a consulta
@@ -278,6 +278,7 @@ public class DBManager {
                 model.setReqSlotsRestauration(rs.getInt("reqSlotsRestauration"));
                 model.setCaminho(rs.getString("caminho"));
                 model.setSlotsSelec(rs.getString("slotsSelec"));
+                model.setModulation(rs.getInt("modulation"));
 
                 // Adicionar o objeto Model à lista
                 listaModel.add(model);
@@ -313,7 +314,7 @@ public class DBManager {
             for(int i = 0; i < adjMatrix.length; i++){
                 for(int j = 0; j<adjMatrix[i].length; j++){
                     if(adjMatrix[i][j] == null) continue;
-                        pst = conexao.prepareStatement("INSERT INTO pt (id,src,dst,slotsLivres,slots,time,event,interrupted, weight) VALUES (?,?,?,?,?,?,?,?)");
+                        pst = conexao.prepareStatement("INSERT INTO pt (id,src,dst,slotsLivres,slots,time,event,interrupted, weight) VALUES (?,?,?,?,?,?,?,?,?)");
                         
                         EONLink link = (EONLink) adjMatrix[i][j];
                         pst.setInt(1,link.getID());

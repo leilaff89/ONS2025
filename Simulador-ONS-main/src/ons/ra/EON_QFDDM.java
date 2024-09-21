@@ -222,7 +222,7 @@ public class EON_QFDDM implements RA{
         
     }    
     
-    public boolean addLightPath2(Flow flow,int[] links,int firstSlot,int requiredSlots){
+    public boolean addLightPath2(Flow flow,int[] links,int firstSlot,int requiredSlots, int modulation){
         ArrayList<Integer> nodes = new ArrayList<Integer>();
         long id;
         LightPath[] lps = new LightPath[1];     
@@ -248,7 +248,7 @@ public class EON_QFDDM implements RA{
                 // Now you create the lightpath to use the createLightpath VT
                 //Relative index modulation: BPSK = 0; QPSK = 1; 8QAM = 2; 16QAM = 3;
                 EONLightPath lp = cp.createCandidateEONLightPath(flow.getSource(), flow.getDestination(), links,
-                        firstSlot, (firstSlot + requiredSlots - 1), flow.getModulation());
+                        firstSlot, (firstSlot + requiredSlots - 1), modulation);
                 // Now you try to establish the new lightpath, accept the call
                 if ((id = cp.getVT().createLightpath(lp)) >= 0) {
                     // Single-hop routing (end-to-end lightpath)
@@ -433,7 +433,7 @@ public class EON_QFDDM implements RA{
                         }
                     }
                     
-                    if (teste == null || teste.getLinks() == null  || !addLightPath2(flow,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration())) {
+                    if (teste == null || teste.getLinks() == null  || !addLightPath2(flow,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration(),teste.getModulation())) {
                         
                         allFlows.remove(flow);
                         if (flow.isDelayTolerant()) {
