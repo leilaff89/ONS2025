@@ -241,7 +241,7 @@ public class EON_QFDDM implements RA{
         
         // First-Fit spectrum assignment in some modulation 
         //int[] firstSlot;
-        for (int i = 0; i < links.length; i++) {
+        //for (int i = 0; i < links.length; i++) {
             // Try the slots available in each link
            // firstSlot = ((EONLink) cp.getPT().getLink(links[i])).getSlotsAvailableToArray(requiredSlots);
             //for (int j = 0; j < firstSlot.length; j++) {
@@ -254,6 +254,7 @@ public class EON_QFDDM implements RA{
                     // Single-hop routing (end-to-end lightpath)
                     lps[0] = cp.getVT().getLightpath(id);
                     if (cp.upgradeFlow(flow, lps)) {
+                        flow.check = true;
                         return true;
                     } else {
                         // Something wrong
@@ -262,7 +263,7 @@ public class EON_QFDDM implements RA{
                     }
                 }
             //}
-        }
+        //}
         
 
         return false;
@@ -325,6 +326,9 @@ public class EON_QFDDM implements RA{
         //Step 3: Sort all connections of set H=(S∪D) in ascending
         //order of αc.        
         ArrayList<Flow> allFlows = new ArrayList<Flow>();
+        for(Flow f : allFlows){
+            f.check = false;
+        }
         allFlows.addAll(interuptedFlows);
         allFlows.addAll(survivedFlows);
         
@@ -339,7 +343,7 @@ public class EON_QFDDM implements RA{
         
         DBManager.activate();
         
-        while(DBManager.waitSim() == 0){}
+            while(DBManager.waitSim() == 0){}
         
         List<Model> model = DBManager.getModel();
         
@@ -406,7 +410,7 @@ public class EON_QFDDM implements RA{
           //  System.out.println(flow.getServiceInfo().getDegradationTolerance());
 
 
-            if (flow.calcDegradation() >= 1-flow.getServiceInfo().getDegradationTolerance()) {
+            if (flow.calcDegradation() >= 1-flow.getServiceInfo().getDegradationTolerance() || flow.check) {
                 if(interuptedFlows.contains(flow)){
                     flow.updateTransmittedBw();
                     cp.restoreFlow(flow);

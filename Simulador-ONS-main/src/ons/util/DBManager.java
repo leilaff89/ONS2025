@@ -32,10 +32,17 @@ public class DBManager {
         conexao = ModuloConexao.connector();
         System.out.println(conexao);
         
+        if(flow.hasPath)
+        {
         try{
             pst = conexao.prepareStatement("INSERT INTO resultado (id,restauracao, networkLoad,classe,event) VALUES (?,?,?,?,?)");
             pst.setLong(1, flow.getID());
-            pst.setInt(2, status);
+            if(status == 1){
+                pst.setInt(2, 1);
+            }
+            else{
+                pst.setInt(2,0);
+            }
             pst.setDouble(3,TrafficGenerator.getLoad());
             pst.setInt(4, flow.getCOS());
             pst.setInt(5,TrafficGenerator.eventNum);
@@ -44,6 +51,7 @@ public class DBManager {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
+        }
         }
     }
     
@@ -63,7 +71,7 @@ public class DBManager {
                         if(adjMatrix[i][j] == null){
                             g.setWeight(i, j, 0);
                             continue;
-                        };
+                        }
                         if(adjMatrix[i][j].isIsInterupted()){
                             g.setWeight(i, j, 0);
                         }
@@ -72,6 +80,13 @@ public class DBManager {
                 }
                 
                 ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(g, flow.getSource(), flow.getDestination(), 10);
+                if(paths.length == 0){
+                    flow.hasPath = false;
+                }
+                else
+                {
+                    flow.hasPath = true;
+                }
                 pst = conexao.prepareStatement("INSERT INTO flow (id,networkLoad,src,dst,rate,bwReq,bwReqRestauration,totalBand,transmittedBand,duration,transmittedTime,tempoFaltante,classe,reqSlots,reqSlotsRestauration,caminhos,degradationTolerance,delayTolerance,delayToleranceTotal,weight,modulation,time, event, interrompido) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             
                 pst.setLong(1, flow.getID());
@@ -321,6 +336,7 @@ public class DBManager {
                         pst.setInt(2,link.getSource());
                         pst.setInt(3,link.getDestination());
                         int[] slots = link.getSlotsAvailableToArray(1);
+                       
                         pst.setInt(4,slots.length);
                         String aux = "[";
                         for(int k = 0; k<slots.length; k++){

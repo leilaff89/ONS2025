@@ -20,14 +20,15 @@ public class ModuloConexao {
         String url = "jdbc:mysql://localhost:3306/eon";
         //String user = "gustavo";
         String user = "root";
-        String password = "utfpr";
+        String password = "root";
         
-        try{
-            Class.forName(driver);
-            conexao = DriverManager.getConnection(url,user,password);
-            return conexao;
-        } catch(Exception e){
-            return null;
+        while(true){
+            try{
+                Class.forName(driver);
+                conexao = DriverManager.getConnection(url,user,password);
+                return conexao;
+            } catch(Exception e){
+            }
         }
     }
     

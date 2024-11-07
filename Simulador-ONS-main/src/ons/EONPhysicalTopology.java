@@ -192,10 +192,12 @@ public class EONPhysicalTopology extends PhysicalTopology {
         }
         //RSA test
         for (int i = 0; i < lightpath.links.length; i++) {
-            if (!(((EONLink) linkVector[lightpath.links[i]]).areSlotsAvaiable(((EONLightPath) lightpath).getFirstSlot(), ((EONLightPath) lightpath).getLastSlot()))) {
-                EONLink c = ((EONLink) linkVector[lightpath.links[i]]);
-                int a = ((EONLightPath) lightpath).getFirstSlot();
-                int b = ((EONLightPath) lightpath).getLastSlot();
+            EONLink c = ((EONLink) linkVector[lightpath.links[i]]);
+            int[] slots = c.getSlotsAvailableToArray(1);
+            int a = ((EONLightPath) lightpath).getFirstSlot();
+            int b = ((EONLightPath) lightpath).getLastSlot();
+            if (!(c.areSlotsAvaiable(a,b))) {
+
                 return false;
             }
         }
