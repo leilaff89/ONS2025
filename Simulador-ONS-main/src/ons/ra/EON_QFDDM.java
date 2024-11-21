@@ -129,6 +129,7 @@ public class EON_QFDDM implements RA{
                         lps[0] = cp.getVT().getLightpath(id);
                         if (cp.acceptFlow(flow.getID(), lps)) {
                           //  System.out.println(path);
+                          FileManager.writeFlow(flow, path, requiredSlots);
                             return;
                         } else {
                             // Something wrong

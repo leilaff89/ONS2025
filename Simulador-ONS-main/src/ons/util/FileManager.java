@@ -31,6 +31,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -60,6 +61,38 @@ public class FileManager {
             System.out.println("Alterações feitas com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    public static void writeFlow(Flow flow, ArrayList<Integer> path, int requiredSlots)
+    {
+        try{
+        
+        FileWriter csvWriter = new FileWriter("FlowArrival.csv", true);
+        
+        csvWriter.append(flow.getID()+",");
+        csvWriter.append(TrafficGenerator.getLoad()+",");
+        csvWriter.append(flow.getSource()+",");
+        csvWriter.append(flow.getDestination()+",");
+        csvWriter.append(flow.getRate()+",");
+        csvWriter.append(flow.getBwReq()+",");
+        csvWriter.append(flow.getDuration2()+",");
+        csvWriter.append(flow.getCOS()+",");
+        csvWriter.append(flow.getModulation()+",");
+        csvWriter.append(requiredSlots+",");
+        csvWriter.append(path.stream().map(String::valueOf).collect(Collectors.joining("-"))+",");
+        csvWriter.append(flow.getServiceInfo().getDegradationTolerance()+",");
+        csvWriter.append(flow.getServiceInfo().getDelayTolerance()+",");
+        csvWriter.append(flow.getServiceInfo().getWeight()+"");
+        
+        
+        
+        csvWriter.append("\n");
+        csvWriter.flush();
+        csvWriter.close();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(EON_QFDDM.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
    
