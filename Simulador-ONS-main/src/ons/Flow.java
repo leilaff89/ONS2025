@@ -42,8 +42,8 @@ public class Flow {
     private boolean degraded;
     private double missingTime;
     private Map<int[], Integer> percentage;
-    public boolean hasPath = false;
-    public boolean check = false;
+    //public boolean hasPath = false;
+    //public boolean check = false;
     
     
 
