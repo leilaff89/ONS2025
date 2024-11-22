@@ -32,17 +32,18 @@ public class DBManager {
         conexao = ModuloConexao.connector();
         //System.out.println(conexao);
         
-        if(flow.hasPath)
-        {
+        //if(flow.hasPath)
+        //{
         try{
             pst = conexao.prepareStatement("INSERT INTO resultado (id,restauracao, networkLoad,classe,event) VALUES (?,?,?,?,?)");
             pst.setLong(1, flow.getID());
-            if(status == 1){
+            pst.setInt(2, status);
+            /*if(status == 1){
                 pst.setInt(2, 1);
             }
             else{
                 pst.setInt(2,0);
-            }
+            }*/
             pst.setDouble(3,TrafficGenerator.getLoad());
             pst.setInt(4, flow.getCOS());
             pst.setInt(5,TrafficGenerator.eventNum);
@@ -52,7 +53,7 @@ public class DBManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        }
+        //}
     }
     
     public static void writeFlows(ArrayList<Flow> flows, boolean interrompido, ControlPlaneForRA cp){
