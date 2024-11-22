@@ -64,14 +64,8 @@ public class EON_QFDDM implements RA{
         int[] links;
         long id;
         LightPath[] lps = new LightPath[1];
-       /* ArrayList<Integer>[] paths = Ye nKSP.kShortestPaths(graph, flow.getSource(), flow.getDestination(), 3);
-        flow.setPaths(paths);   */    
        ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(cp.getPT().getWeightedGraph(), flow.getSource(), flow.getDestination(), 10);
        flow.setPaths(paths);  
-        
-    
-       
-        //this.graph = this.getPostDisasterGraph(cp.getPT());
         
         OUTER:
         for (ArrayList<Integer> path : paths) {
@@ -138,31 +132,28 @@ public class EON_QFDDM implements RA{
                         }
                     }
                 }
-            }           
-
+            }          
         }
-        
+       
         // Block the call
-        //System.out.println("Block Arrival");
         cp.blockFlow(flow.getID());        
-        
+       
     }
-    
-    
+   
     public boolean addLightPath(Flow flow){
-        
+       
         ArrayList<Integer> nodes = new ArrayList<Integer>();
         int[] links;
         long id;
-        LightPath[] lps = new LightPath[1];     
-        
+        LightPath[] lps = new LightPath[1];    
+       
         if (flow.getPaths() == null) {
 
             ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(getPostDisasterGraph(cp.getPT()), flow.getSource(), flow.getDestination(), 3);
             flow.setPaths(paths);
 
         }
-        
+       
         OUTER:
         for (ArrayList<Integer> path : flow.getPaths()) {
             nodes = path;
@@ -176,10 +167,10 @@ public class EON_QFDDM implements RA{
             }
             // Get the size of the route in km
             double sizeRoute = 0;
-            for (int i = 0; i < links.length; i++) {               
+            for (int i = 0; i < links.length; i++) {              
                 sizeRoute += ((EONLink) cp.getPT().getLink(links[i])).getWeight();
             }
-            
+           
             // Adaptative modulation:
             int modulation = Modulation.getBestModulation(sizeRoute);
 
@@ -193,7 +184,7 @@ public class EON_QFDDM implements RA{
                     continue;
                 }
             }
-            // First-Fit spectrum assignment in some modulation 
+            // First-Fit spectrum assignment in some modulation
             int[] firstSlot;
             for (int i = 0; i < links.length; i++) {
                 // Try the slots available in each link
@@ -220,34 +211,16 @@ public class EON_QFDDM implements RA{
         }
 
         return false;
-        
+       
     }    
-    
+   
     public boolean addLightPath2(Flow flow,int[] links,int firstSlot,int requiredSlots, int modulation){
         ArrayList<Integer> nodes = new ArrayList<Integer>();
         long id;
-        LightPath[] lps = new LightPath[1];     
-        
-        // Get the size of the route in km
-        double sizeRoute = 0;
-        for (int i = 0; i < links.length; i++) {               
-            sizeRoute += ((EONLink) cp.getPT().getLink(links[i])).getWeight();
-        }
+        LightPath[] lps = new LightPath[1];    
 
-        // Adaptative modulation:
-        //int modulation = Modulation.getBestModulation(sizeRoute);
+        for (int i = 0; i < links.length; i++) {
 
-        // Calculates the required slots
-        //int requiredSlots = Modulation.convertRateToSlot((int) flow.getMaxRate(), EONPhysicalTopology.getSlotSize(), modulation);
-        
-        // First-Fit spectrum assignment in some modulation 
-        //int[] firstSlot;
-        //for (int i = 0; i < links.length; i++) {
-            // Try the slots available in each link
-           // firstSlot = ((EONLink) cp.getPT().getLink(links[i])).getSlotsAvailableToArray(requiredSlots);
-            //for (int j = 0; j < firstSlot.length; j++) {
-                // Now you create the lightpath to use the createLightpath VT
-                //Relative index modulation: BPSK = 0; QPSK = 1; 8QAM = 2; 16QAM = 3;
                 EONLightPath lp = cp.createCandidateEONLightPath(flow.getSource(), flow.getDestination(), links,
                         firstSlot, (firstSlot + requiredSlots - 1), modulation);
                 // Now you try to establish the new lightpath, accept the call
@@ -255,7 +228,6 @@ public class EON_QFDDM implements RA{
                     // Single-hop routing (end-to-end lightpath)
                     lps[0] = cp.getVT().getLightpath(id);
                     if (cp.upgradeFlow(flow, lps)) {
-                        flow.check = true;
                         return true;
                     } else {
                         // Something wrong
@@ -263,76 +235,43 @@ public class EON_QFDDM implements RA{
                         cp.getVT().deallocatedLightpath(id);
                     }
                 }
-            //}
-        //}
-        
+        }
+       
 
         return false;
-        
+       
     }  
-    
-    
+   
+   
     @Override
     public void flowDeparture(long id) {
-        
+       
     }
 
     @Override
     public void disasterArrival(DisasterArea area) {
         DBManager.truncate();
-        
+       
         TrafficGenerator.eventNum = (TrafficGenerator.eventNum + 1)%4;
-        
+       
         ArrayList<Flow> survivedFlows = cp.getMappedFlowsAsList();
-        ///Step 1: For each existing/survived connection of set
-        ///S(⊂C), degrade the bandwidth to one unit. 
-        
+       
         for (Flow f : survivedFlows) {
-            
-            
             if (f.isDegradeTolerant()) {
-               
-               
-                cp.degradeFlow(f, /*f.getMaxDegradationNumber()*/ f.getMaxDegradationNumberEon());
-                System.out.println("-----------------------------");
-                System.out.println(cp.getPT());
+                cp.degradeFlow(f,f.getMaxDegradationNumberEon());
             }
-
         }
-        
-        
-        //Step 2: For each disrupted connection of set D(⊂C), reprovision
-        //it on the shortest available candidate
-        //path P(c,k) with one bandwidth unit.
-        /*for (Flow flow : cp.getInteruptedFlows()) {
 
-            rerouteFlow(flow);
-
-        }*/
-        
         ArrayList<Flow> interuptedFlows = new ArrayList<Flow>(cp.getInteruptedFlows());
-        /*for (Iterator<Flow> i = interuptedFlows.iterator(); i.hasNext();) {
-            Flow flow = i.next();
-            if (flow.calcDegradation() == 0.0f || Double.isNaN(flow.calcDegradation())) {                 
-                cp.dropFlow(flow);
-                flow.updateTransmittedBw();
-                i.remove();
-
-            }
-
-        }*/
-        
-        
-
-        //Step 3: Sort all connections of set H=(S∪D) in ascending
-        //order of αc.        
-        ArrayList<Flow> allFlows = new ArrayList<Flow>();
-        for(Flow f : allFlows){
-            f.check = false;
+       
+        for(Flow f : interuptedFlows){
+            f.updateMissingTime();
         }
+       
+        ArrayList<Flow> allFlows = new ArrayList<Flow>();
         allFlows.addAll(interuptedFlows);
         allFlows.addAll(survivedFlows);
-        
+       
         FileManager.writeFlows(survivedFlows,"flowsSobreviventes"+Main.numSim+".csv",cp);
         FileManager.writeFlows(interuptedFlows,"flowsInterrompidos"+Main.numSim+".csv",cp);
         FileManager.writeVT(cp,Main.numSim+"");
@@ -341,157 +280,86 @@ public class EON_QFDDM implements RA{
 
         DBManager.writeVT(cp);
         DBManager.writePT(cp);
-        
-        DBManager.activate();
-        
-            while(DBManager.waitSim() == 0){}
-        
-        List<Model> model = DBManager.getModel();
-        
-        //FileManager.writeCSV(allFlows);
-        
-        
-        
-        ArrayList<Flow> flows = new ArrayList<Flow>();
-        //flows.addAll(allFlows);
-        flows.addAll(interuptedFlows);
-        
-        for(Flow f : interuptedFlows){
-            f.updateMissingTime();
-        }
-        
-        Comparator<Flow> comparator = new Comparator<Flow>() {
-            @Override
-            public int compare(Flow t, Flow t1) {
-                
-                int t1Deg = t.getServiceInfo().getServiceInfo();
-                int t2Deg = t1.getServiceInfo().getServiceInfo();
-                int sComp = Integer.compare(t1Deg, t2Deg);
-                
-                if(sComp != 0){
-                    
-                    return sComp;
-                    
-                }else{
-                    
-                    return Double.compare(t.getServiceInfo().getDelayTolerance(), t1.getServiceInfo().getDelayTolerance());
-                    
-                }              
-                                
-            }
-        };
        
+        DBManager.activate();
+       
+        while(DBManager.waitSim() == 0){}
+       
+        List<Model> model = DBManager.getModel();
 
-        //Step 4: For the first connection c in set H, if αc ≥ 1, remove
-        //this connection, go to Step 4; otherwise,
-        //upgrade connection c by 1 bandwidth unit; if
-        //successful, go to Step 3; otherwise, go to Step 5.        
-        while (allFlows.size() > 0) {
+        ArrayList<Flow> flows = new ArrayList<Flow>();
+        flows.addAll(interuptedFlows);
+       
+        while (model.size() > 0) {
 
-            Collections.sort(allFlows, comparator);
-            Flow flow = allFlows.get(0);
-            
+            Model teste = model.get(0);
+           
+            for(Flow f: flows){
+                if(teste.getId() == f.getID()){
+                   
+                    /*if(f.calcDegradation() >= 1-f.getServiceInfo().getDegradationTolerance()){
+                        f.updateTransmittedBw();
+                        cp.restoreFlow(f);
+                        DBManager.writeResult(f, 5);
+                        flows.remove(f);
+                        model.remove(teste);
+                        break;*/
+                       
+          /*}else*/ if(teste.getLinks() == null){
 
-            /*System.out.println();
-            for(Flow f:allFlows){
-                
-                System.out.println("Classe de serviço: " + f.getServiceInfo().getServiceInfo() + " Degradation Rate: " + f.calcDegradation());
-                
-            }
-            System.out.println();*/
-            /*float aux_degr = 1;
-            if (flow.isDegradeTolerant()) {
-                aux_degr = (flow.getMaxDegradationNumberEon()) / (float) flow.getRequiredSlots();
-            }*/
-
-           // System.out.println(flow.getBwReq());
-           // System.out.println(flow.getServiceInfo().getDegradationTolerance());
-          //  System.out.println(flow.getBwReq()*flow.getServiceInfo().getDegradationTolerance());
-          //  System.out.println("######################");
-          //  System.out.println(flow.getServiceInfo().getDegradationTolerance());
-
-
-            if (flow.calcDegradation() >= 1-flow.getServiceInfo().getDegradationTolerance() || flow.check) {
-                if(interuptedFlows.contains(flow)){
-                    flow.updateTransmittedBw();
-                    cp.restoreFlow(flow);
-                    DBManager.writeResult(flow, 1);
-                  //  System.out.println("restore");
-
-                }
-                
-                allFlows.remove(flow);
-                continue;
-
-            } else {
-
-                if (!cp.upgradeFlow(flow, null)) {
-                    
-                    Model teste = null;
-                    
-                    for(Model a: model)
-                    {
-                        if(a.getId() == flow.getID())
-                        {
-                            teste = a;
-                            break;
+                        if(f.isDelayTolerant()){
+                            cp.delayFlow(f);
+                        }else{
+                            DBManager.writeResult(f, 4);
+                            cp.dropFlow(f);
                         }
-                    }
-                    
-                    if (teste == null || teste.getLinks() == null  || !addLightPath2(flow,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration(),teste.getModulation())) {
-                        
-                        allFlows.remove(flow);
-                        if (flow.isDelayTolerant()) {
-                             
-
-                            //Delay tolerant
-                            cp.delayFlow(flow);
-
-                        } else {
-
-                            //Drop Flow
-                            cp.dropFlow(flow); 
-                            if(interuptedFlows.contains(flow)){
-                                DBManager.writeResult(flow, 0);
-                            }
-
+                        flows.remove(f);
+                        model.remove(teste);
+                        break;
+                   
+                    }else if (addLightPath2(f,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration(),teste.getModulation())){
+                        cp.restoreFlow(f);
+                        DBManager.writeResult(f, 1);
+                        flows.remove(f);
+                        model.remove(teste);
+                        break;
+                           
+                    }else{
+                       
+                        if(f.isDelayTolerant()){
+                            cp.delayFlow(f);
+                        }else{
+                            DBManager.writeResult(f, 0);
+                            cp.dropFlow(f);
                         }
-                        flow.updateTransmittedBw();
-
+                        flows.remove(f);
+                        model.remove(teste);
                     }
-
+                       
+                    f.updateTransmittedBw();
+                    break;
                 }
-
             }
-
-        }
-        
-        //FileManager.writeCSV(interuptedFlows);
-        
+        }  
     }
+   
 
     @Override
     public void disasterDeparture() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        //System.out.println("Acabou " + SimulationRunner.timer);
+
     }
 
     @Override
     public void delayedFlowDeparture(Flow f) {
-        //f.updateTransmittedBw();
+        
     }
 
     public void delayedFlowArrival(Flow f) {
-        
-        
-        //System.out.println("Holding time: " + (f.getDepartureEvent().getTime() - f.getArrivalEvent().getTime()) + " Tempo: " + (SimulationRunner.timer - TrafficGenerator.disasterArrival[TrafficGenerator.globalCount]));
-        
-        ArrayList<Integer>[] paths = YenKSP.kShortestPaths(this.getPostDisasterGraph(cp.getPT())/*cp.getPT().getWeightedGraph()*/, f.getSource(), f.getDestination(), 3);
-        
-        
+       
+        ArrayList<Integer>[] paths = YenKSP.kShortestPaths(this.getPostDisasterGraph(cp.getPT()), f.getSource(), f.getDestination(), 3);
+       
         f.setPaths(paths);
-        //System.out.println("Tratamento iniciado " + SimulationRunner.timer);
-                
+               
         while (f.calcDegradation() < 1 - f.getServiceInfo().getDegradationTolerance()) {
 
             if (!cp.upgradeFlow(f, null)) {
@@ -505,20 +373,16 @@ public class EON_QFDDM implements RA{
             }
 
         }
-        
+       
         if (f.calcDegradation() < 1 - f.getServiceInfo().getDegradationTolerance()) {
-            //System.out.println("Dropou com " + f.calcDegradation() + " precisava de: " + (1- f.getServiceInfo().getDegradationTolerance()));
             cp.dropFlow(f);
-            DBManager.writeResult(f, 0);
+            DBManager.writeResult(f, 2);
         }else{
-            //System.out.println("Restaurou " + f.calcDegradation());
             cp.restoreFlow(f);  
-            DBManager.writeResult(f, 1);
-            
+            DBManager.writeResult(f, 3);
+           
         }    
        
     }
-
-    
-    
+   
 }
