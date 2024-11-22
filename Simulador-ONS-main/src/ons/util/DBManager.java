@@ -32,8 +32,6 @@ public class DBManager {
         conexao = ModuloConexao.connector();
         //System.out.println(conexao);
         
-        //if(flow.hasPath)
-        //{
         try{
             pst = conexao.prepareStatement("INSERT INTO resultado (id,restauracao, networkLoad,classe,event) VALUES (?,?,?,?,?)");
             pst.setLong(1, flow.getID());
@@ -80,14 +78,14 @@ public class DBManager {
                     }
                 }
                 
-                ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(g, flow.getSource(), flow.getDestination(), 10);
-                if(paths.length == 0){
+                ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(g, flow.getSource(), flow.getDestination(), 3);
+                /*if(paths.length == 0){
                     flow.hasPath = false;
                 }
                 else
                 {
                     flow.hasPath = true;
-                }
+                }*/
                 pst = conexao.prepareStatement("INSERT INTO flow (id,networkLoad,src,dst,rate,bwReq,bwReqRestauration,totalBand,transmittedBand,duration,transmittedTime,tempoFaltante,classe,reqSlots,reqSlotsRestauration,caminhos,degradationTolerance,delayTolerance,delayToleranceTotal,weight,modulation,time, event, interrompido) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             
                 pst.setLong(1, flow.getID());
