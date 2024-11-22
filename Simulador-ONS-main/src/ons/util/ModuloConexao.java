@@ -16,11 +16,11 @@ public class ModuloConexao {
         java.sql.Connection conexao = null;
         
         String driver = "com.mysql.cj.jdbc.Driver";
-       // String url = "jdbc:mysql://192.168.12.221:3306/eon";
-        String url = "jdbc:mysql://localhost:3306/eon";
-        //String user = "gustavo";
-        String user = "root";
-        String password = "root";
+        String url = "jdbc:mysql://192.168.12.221:3306/eon";
+        //String url = "jdbc:mysql://localhost:3306/eon";
+        String user = "gustavo";
+        //String user = "root";
+        String password = "utfpr";
         
         while(true){
             try{

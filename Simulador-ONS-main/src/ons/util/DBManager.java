@@ -30,7 +30,7 @@ public class DBManager {
         PreparedStatement pst = null;
         ResultSet rs = null;
         conexao = ModuloConexao.connector();
-        System.out.println(conexao);
+        //System.out.println(conexao);
         
         if(flow.hasPath)
         {
@@ -60,7 +60,7 @@ public class DBManager {
         PreparedStatement pst = null;
         ResultSet rs = null;
         conexao = ModuloConexao.connector();
-        System.out.println(conexao);
+        //System.out.println(conexao);
         
         for (Flow flow : flows) {
             try{
@@ -147,7 +147,7 @@ public class DBManager {
         PreparedStatement pst = null;
         ResultSet rs = null;
         conexao = ModuloConexao.connector();
-        System.out.println(conexao);
+        //System.out.println(conexao);
         
         try {
             pst = conexao.prepareStatement("TRUNCATE TABLE vt;");
@@ -171,7 +171,7 @@ public class DBManager {
         PreparedStatement pst = null;
         ResultSet rs = null;
         conexao = ModuloConexao.connector();
-        System.out.println(conexao);
+        //System.out.println(conexao);
         
         try{
             TreeSet<LightPath>[][] adjMatrix = cp.getVT().getAdjMatrix();
@@ -219,7 +219,7 @@ public class DBManager {
         PreparedStatement pst = null;
         ResultSet rs = null;
         conexao = ModuloConexao.connector();
-        System.out.println(conexao);
+        //System.out.println(conexao);
         try{
             pst = conexao.prepareStatement("UPDATE controle_simulacao SET simulacao_ativa = 0");
             pst.executeUpdate();
@@ -236,7 +236,7 @@ public class DBManager {
         
         try{
             conexao = ModuloConexao.connector();
-            System.out.println(conexao);
+            //System.out.println(conexao);
             
             String consultaSQL = "SELECT simulacao_ativa FROM controle_simulacao";
             pst = conexao.prepareStatement(consultaSQL);
@@ -271,7 +271,7 @@ public class DBManager {
         try {
             // Estabelecer a conexão com o banco de dados
             conexao = ModuloConexao.connector();
-            System.out.println(conexao);
+            //System.out.println(conexao);
 
             // Consulta SQL SELECT
             String consultaSQL = "SELECT id, links, src, dst, bwReqRestauration, tempoFaltante, reqSlotsRestauration, caminho, slotsSelec, modulation FROM model";
@@ -321,7 +321,7 @@ public class DBManager {
         PreparedStatement pst = null;
         ResultSet rs = null;
         conexao = ModuloConexao.connector();
-        System.out.println(conexao);
+        //System.out.println(conexao);
         
         try{
             WeightedGraph g = cp.getPT().getWeightedGraph();
