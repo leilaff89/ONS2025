@@ -123,7 +123,7 @@ public class EON_QFDDM implements RA{
                         lps[0] = cp.getVT().getLightpath(id);
                         if (cp.acceptFlow(flow.getID(), lps)) {
                           //  System.out.println(path);
-                          FileManager.writeFlow(flow, path, requiredSlots);
+                          //FileManager.writeFlow(flow, /*path*/ requiredSlots, links, sizeRoute);
                             return;
                         } else {
                             // Something wrong
@@ -236,7 +236,6 @@ public class EON_QFDDM implements RA{
                     }
                 }
         }
-       
 
         return false;
        
@@ -266,20 +265,21 @@ public class EON_QFDDM implements RA{
        
         for(Flow f : interuptedFlows){
             f.updateMissingTime();
+            ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(getPostDisasterGraph(cp.getPT()), f.getSource(), f.getDestination(), 3);
+            f.setPaths(paths);
         }
        
         ArrayList<Flow> allFlows = new ArrayList<Flow>();
         allFlows.addAll(interuptedFlows);
         allFlows.addAll(survivedFlows);
        
-        FileManager.writeFlows(survivedFlows,"flowsSobreviventes"+Main.numSim+".csv",cp);
-        FileManager.writeFlows(interuptedFlows,"flowsInterrompidos"+Main.numSim+".csv",cp);
-        FileManager.writeVT(cp,Main.numSim+"");
-                DBManager.writeFlows(survivedFlows,true,cp);
-                DBManager.writeFlows(interuptedFlows,false,cp);
-
-        DBManager.writeVT(cp);
-        DBManager.writePT(cp);
+        //FileManager.writeFlows(survivedFlows,"flowsSobreviventes"+Main.numSim+".csv",cp);
+        //FileManager.writeFlows(interuptedFlows,"flowsInterrompidos"+Main.numSim+".csv",cp);
+        //FileManager.writeVT(cp,Main.numSim+"");
+            DBManager.writeFlows(survivedFlows,true,cp);
+            DBManager.writeFlows(interuptedFlows,false,cp);
+            //DBManager.writeVT(cp);
+            DBManager.writePT(cp);
        
         DBManager.activate();
        
