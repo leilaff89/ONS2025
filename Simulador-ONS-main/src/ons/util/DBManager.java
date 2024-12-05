@@ -63,6 +63,7 @@ public class DBManager {
         
         for (Flow flow : flows) {
             try{
+                /*
                 WeightedGraph g = cp.getPT().getWeightedGraph();
                 Link[][] adjMatrix = cp.getPT().getAdjMatrix();
                 for(int i = 0; i < adjMatrix.length; i++){
@@ -103,9 +104,8 @@ public class DBManager {
                 pst.setInt(13, flow.getCOS());
                 pst.setInt(14, flow.getRequiredSlots2());
                 pst.setInt(15, flow.getRequiredSlotsRestauration2());
-                
-                
-                
+                              
+                var paths = flow.getPaths();
                 String path = "";
             
                 if(paths.length > 0){
