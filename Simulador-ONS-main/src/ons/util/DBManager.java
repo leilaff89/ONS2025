@@ -154,8 +154,8 @@ public class DBManager {
             pst = conexao.prepareStatement("TRUNCATE TABLE pt;");
             pst.executeUpdate();
          
-            pst = conexao.prepareStatement("TRUNCATE TABLE model;");
-            pst.executeUpdate();
+            /*pst = conexao.prepareStatement("TRUNCATE TABLE model;");
+            pst.executeUpdate();*/
             pst = conexao.prepareStatement("TRUNCATE TABLE flow;");
             pst.executeUpdate();
         } catch (SQLException e) {
@@ -213,14 +213,15 @@ public class DBManager {
             }
     }
     
-    public static void activate(){
+    public static void activate(int status){
         Connection conexao = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
         conexao = ModuloConexao.connector();
         //System.out.println(conexao);
         try{
-            pst = conexao.prepareStatement("UPDATE controle_simulacao SET simulacao_ativa = 0");
+            pst = conexao.prepareStatement("UPDATE controle_simulacao SET simulacao_ativa = ?");
+            pst.setInt(1, status);
             pst.executeUpdate();
         }catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());

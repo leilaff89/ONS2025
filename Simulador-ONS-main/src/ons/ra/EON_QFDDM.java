@@ -281,7 +281,7 @@ public class EON_QFDDM implements RA{
             //DBManager.writeVT(cp);
             DBManager.writePT(cp);
        
-        DBManager.activate();
+        DBManager.activate(0);
        
         while(DBManager.waitSim() == 0){}
        
@@ -340,7 +340,7 @@ public class EON_QFDDM implements RA{
                     break;
                 }
             }
-        }  
+        } 
     }
    
 
