@@ -1,4 +1,4 @@
-/*
+/* V2
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -8,6 +8,7 @@ package ons.ra;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -50,7 +51,7 @@ public class EON_QFDDM implements RA{
                     if(!pt.getLink(i, j).isIsInterupted()){
                         g.addEdge(i, j, pt.getLink(i, j).getWeight());
                     }else{                        
-                        g.addEdge(i, j, Integer.MAX_VALUE);
+                        g.addEdge(i, j, 0 /*Integer.MAX_VALUE*/);
                     }                        
                 }
             }
@@ -250,6 +251,7 @@ public class EON_QFDDM implements RA{
     @Override
     public void disasterArrival(DisasterArea area) {
         DBManager.truncate();
+        DBManager.activate(0);
        
         TrafficGenerator.eventNum = (TrafficGenerator.eventNum + 1)%4;
        
@@ -281,22 +283,23 @@ public class EON_QFDDM implements RA{
             //DBManager.writeVT(cp);
             DBManager.writePT(cp);
        
-        DBManager.activate(0);
+        DBManager.activate(1);     
        
-        while(DBManager.waitSim() == 0){}
-       
-        List<Model> model = DBManager.getModel();
-
         ArrayList<Flow> flows = new ArrayList<Flow>();
         flows.addAll(interuptedFlows);
        
-        while (model.size() > 0) {
-
-            Model teste = model.get(0);
+        while (flows.size() > 0) {
            
+            while(DBManager.waitSim() != 2){} 
+            while (DBManager.getModel().isEmpty()){}
+            List<Model> model = DBManager.getModel();
+            
+            Model teste = model.get(0);
+            
             for(Flow f: flows){
                 if(teste.getId() == f.getID()){
-                   
+ 
+
                     /*if(f.calcDegradation() >= 1-f.getServiceInfo().getDegradationTolerance()){
                         f.updateTransmittedBw();
                         cp.restoreFlow(f);
@@ -308,13 +311,15 @@ public class EON_QFDDM implements RA{
           /*}else*/ if(teste.getLinks() == null){
 
                         if(f.isDelayTolerant()){
+                            DBManager.writeResult(f, 4);
                             cp.delayFlow(f);
                         }else{
-                            DBManager.writeResult(f, 4);
+                            DBManager.writeResult(f, 3);
                             cp.dropFlow(f);
                         }
                         flows.remove(f);
                         model.remove(teste);
+                        DBManager.activate(3);
                         break;
                    
                     }else if (addLightPath2(f,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration(),teste.getModulation())){
@@ -322,25 +327,31 @@ public class EON_QFDDM implements RA{
                         DBManager.writeResult(f, 1);
                         flows.remove(f);
                         model.remove(teste);
+                        DBManager.activate(3);
                         break;
                            
                     }else{
                        
                         if(f.isDelayTolerant()){
                             cp.delayFlow(f);
+                            DBManager.writeResult(f, 2);
                         }else{
                             DBManager.writeResult(f, 0);
                             cp.dropFlow(f);
                         }
                         flows.remove(f);
                         model.remove(teste);
+                        DBManager.activate(3);
                     }
                        
-                    f.updateTransmittedBw();
+                    f.updateTransmittedBw();                    
+                    
                     break;
+                                    
                 }
             }
         } 
+        DBManager.activate(4);
     }
    
 
@@ -376,10 +387,10 @@ public class EON_QFDDM implements RA{
        
         if (f.calcDegradation() < 1 - f.getServiceInfo().getDegradationTolerance()) {
             cp.dropFlow(f);
-            DBManager.writeResult(f, 2);
+            DBManager.writeResult(f, 6);
         }else{
             cp.restoreFlow(f);  
-            DBManager.writeResult(f, 3);
+            DBManager.writeResult(f, 5);
            
         }    
        

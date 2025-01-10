@@ -102,6 +102,7 @@ public class VirtualTopology {
         if (pt.getLink(lp.getLinks()[0]).getSource() != lp.getSource()
                 || pt.getLink(lp.getLinks()[lp.getLinks().length - 1]).getDestination() != lp.getDestination()) {
             throw (new IllegalArgumentException());
+            
         } else {
             if (!pt.canCreatePhysicalLightpath(lp)) {
                 return -1;

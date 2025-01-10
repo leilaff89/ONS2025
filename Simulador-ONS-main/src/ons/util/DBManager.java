@@ -47,7 +47,7 @@ public class DBManager {
             pst.setInt(5,TrafficGenerator.eventNum);
             pst.executeUpdate();
         } catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            System.err.format("1 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,7 +80,7 @@ public class DBManager {
                 }
                 
                 ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(g, flow.getSource(), flow.getDestination(), 3);
-                /*if(paths.length == 0){
+                if(paths.length == 0){
                     flow.hasPath = false;
                 }
                 else
@@ -132,7 +132,7 @@ public class DBManager {
             pst.executeUpdate();
             
             } catch (SQLException e) {
-                System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+                System.err.format("2 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -159,7 +159,7 @@ public class DBManager {
             pst = conexao.prepareStatement("TRUNCATE TABLE flow;");
             pst.executeUpdate();
         } catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            System.err.format("3 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -207,7 +207,7 @@ public class DBManager {
             }
             
         } catch (SQLException e) {
-                System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+                System.err.format("4 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -224,7 +224,7 @@ public class DBManager {
             pst.setInt(1, status);
             pst.executeUpdate();
         }catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            System.err.format("5 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
         }
         
     }
@@ -247,7 +247,7 @@ public class DBManager {
             rs.next();
             return rs.getInt("simulacao_ativa");
         } catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            System.err.format("6 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
             return 1;
         } finally {
             // Fechar recursos (ResultSet, PreparedStatement, Connection)
@@ -300,7 +300,7 @@ public class DBManager {
             }
 
         } catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            System.err.format("7 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
         } finally {
             // Fechar recursos (ResultSet, PreparedStatement, Connection)
             try {
@@ -359,7 +359,7 @@ public class DBManager {
             
             
         } catch (SQLException e) {
-                System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+                System.err.format("8 - SQL State: %s\n%s", e.getSQLState(), e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
