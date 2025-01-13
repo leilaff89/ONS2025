@@ -51,7 +51,7 @@ public class EON_QFDDM implements RA{
                     if(!pt.getLink(i, j).isIsInterupted()){
                         g.addEdge(i, j, pt.getLink(i, j).getWeight());
                     }else{                        
-                        g.addEdge(i, j, 0 /*Integer.MAX_VALUE*/);
+                        g.addEdge(i, j, Integer.MAX_VALUE);
                     }                        
                 }
             }
@@ -268,6 +268,20 @@ public class EON_QFDDM implements RA{
         for(Flow f : interuptedFlows){
             f.updateMissingTime();
             ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(getPostDisasterGraph(cp.getPT()), f.getSource(), f.getDestination(), 3);
+            for (int i = 0; i < paths.length; i++) {
+                ArrayList<Integer> path = paths[i];
+                if (path.isEmpty()) {
+                    continue;
+                }
+                ArrayList<Integer> linkPath = new ArrayList<>();
+                for (int j = 0; j < path.size() - 1; j++) {
+                    int linkID = cp.getPT().getLink(path.get(j), path.get(j + 1)).getID();
+                    linkPath.add(linkID);
+                }
+        
+                path.clear();
+                path.addAll(linkPath);
+            }
             f.setPaths(paths);
         }
        
