@@ -38,7 +38,7 @@ public class Main {
      * 
      * @param args the command line arguments
      */
-    public static int epoca = 1;
+    public static int epoca = 200000;
     public static int totSim = 10;
     public static int numSim = 0;
     public static int load = 30;

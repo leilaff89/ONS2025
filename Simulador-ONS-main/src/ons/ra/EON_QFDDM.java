@@ -365,7 +365,7 @@ public class EON_QFDDM implements RA{
                 }
             }
         } 
-        DBManager.activate(4);
+        while(DBManager.waitSim() != 4){} 
     }
    
 
