@@ -38,7 +38,7 @@ public class Main {
      * 
      * @param args the command line arguments
      */
-    public static int epoca = 200000;
+    public static int epoca = 1;
     public static int totSim = 10;
     public static int numSim = 0;
     public static int load = 30;
@@ -51,14 +51,15 @@ public class Main {
         String file = args[1];
         
         for(int i = 0; i < epoca; i++){
-            load = 30;
+            load = 100;
             numSim = 0;
             while(numSim<totSim){
                 if(numSim%(totSim/10) == 0){
-                    load+=20;
+                    load+=50;
                     FileManager.changeLoad(load,file);
                 }
                 execute(newArgs);
+                System.out.println(load);
                 numSim++;
             }
         }

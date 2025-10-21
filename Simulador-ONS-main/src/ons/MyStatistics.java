@@ -368,7 +368,7 @@ public class MyStatistics {
                 stats += Modulation.getModulationName(i) +" Modulation used: " + Float.toString((float) modulations[i]/(float) numLightPaths*100) + "%\n";
             }
         }
-        stats += "\n";
+        //stats += "\n";
         stats += "Blocking probability per s-d node-pair:\n";
         for (int i = 0; i < numNodes; i++) {
             for (int j = 0; j < numNodes; j++) {
@@ -423,8 +423,9 @@ public class MyStatistics {
             }
         }
 
-        System.out.println("Conexões interrompidas totais: " + (droppedFlows+restoredFlows));
-        System.out.println("Flows Dropadas: " + droppedFlows + " Restauradas: " + restoredFlows);
+        System.out.println("Conexoes interrompidas totais: " + (droppedFlows+restoredFlows));
+        System.out.println("Flows Dropadas: " + droppedFlows);
+        System.out.println("Restauradas: " + restoredFlows);
 
 
 
@@ -440,7 +441,7 @@ public class MyStatistics {
         }        
         
         stats += "Drop rate: "+this.dropRate+"\n";
-        stats += "Dropped Flows: "+this.droppedFlows+"\n";
+        //stats += "Dropped Flows: "+this.droppedFlows+"\n";
         if(fullServiceFlows>0){
             
             fullServiceDropRate = (float)this.fullServiceDroppedFlows/this.fullServiceFlows;
@@ -489,7 +490,7 @@ public class MyStatistics {
         
         stats += "Extreme Degradation Tolerant Service Drop Rate: " + this.getDegradedServiceDropRate() + "\n";
         
-        stats += "\nLPs: " + numLightPaths + "\n";
+        stats += "LPs: " + numLightPaths + "\n";
         double freeTransponders = (float) numTransponders/times; //free transponders/times-requests
         double freeTranspondersRatio = (float) ((freeTransponders*100.0)/MAX_NumTransponders);     
         stats += "Available Transponders: " + freeTranspondersRatio + "%\n";
@@ -509,7 +510,8 @@ public class MyStatistics {
             double frag_rede = (double) MAX_AvailableSlots / (double )availableSlots;
             System.out.println(MAX_AvailableSlots);
             System.out.println(averageSpectrumAvailable);
-            stats += "Fragmentação da rede: " + minDegr + "%\n";
+            //stats += "Fragmentação da rede: " + minDegr + "%\n";
+            //stats += "Fragmentação: " + df.format(frag_rede) + "%\n";
             for(int i = 0; i < modulations.length; i++){
                 stats += Modulation.getModulationName(i) +" Modulation used: " + Float.toString((float) modulations[i]/(float) numLightPaths*100) + "%\n";
             }

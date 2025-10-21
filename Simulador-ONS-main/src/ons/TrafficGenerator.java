@@ -247,7 +247,7 @@ public class TrafficGenerator {
                 time += dist3.nextExponential(meanArrivalTime);
                 event.setTime(time);
                 disasterArrival[count] = (float) time;
-                System.out.println("TimeTime | " + time);
+                //System.out.println("TimeTime | " + time);
                 events.addEvent(event);
                 event = new DisasterDepartureEvent(area);
                 //time += dist4.nextExponential(callsTypesInfo[type].getHoldingTime())*listLinks.getLength();//+10;

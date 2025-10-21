@@ -95,7 +95,7 @@ public class Model {
     
     public int getFirstSlot() {
         String slot[] = slotsSelec.split(",");
-        System.out.println(slot[0]);
+        //System.out.println(slot[0]);
         if(slot[0].equals("\"[]\"")) return -1;
         return Integer.parseInt(slot[0]);
     }

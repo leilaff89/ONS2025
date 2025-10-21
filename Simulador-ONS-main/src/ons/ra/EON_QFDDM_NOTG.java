@@ -20,14 +20,19 @@ import static ons.ra.EON_FDM.convertIntegers;
  * @author Brenno_Serrato
  */
 public class EON_QFDDM_NOTG implements RA {
-
+    
+    int contador = 0;
+    int semrotatotal = 0;
+    
     private ControlPlaneForRA cp;
     private WeightedGraph graph;
+    private PhysicalTopology pt;
 
     @Override
     public void simulationInterface(ControlPlaneForRA cp) {
         this.cp = cp;
         this.graph = cp.getPT().getWeightedGraph();
+        this.pt = cp.getPT();
     }
 
     private WeightedGraph getPostDisasterGraph(PhysicalTopology pt) {
@@ -272,6 +277,20 @@ public class EON_QFDDM_NOTG implements RA {
 
     }
 
+    
+    public Double getNetworkFragmentation()
+    {
+        int slots_total = 0;
+        int slots_cont = 0;
+        int qtdLinks = pt.getNumLinks();
+        for(int i = 0; i<qtdLinks;i++)
+        {
+            slots_total += ((EONLink) pt.getLink(i)).getAvaiableSlots();
+            slots_cont += ((EONLink) pt.getLink(i)).maxSizeAvaiable();
+        }
+
+        return (1-((double)slots_cont/(double)slots_total))*100;
+    }
 
     @Override
     public void flowDeparture(long id) {
@@ -280,6 +299,8 @@ public class EON_QFDDM_NOTG implements RA {
 
     @Override
     public void disasterArrival(DisasterArea area) {
+        
+        double frag = 0;
         ArrayList<Flow> survivedFlows = cp.getMappedFlowsAsList();
         for (Flow f : survivedFlows) {
             if (f.isDegradeTolerant()) {
@@ -288,6 +309,13 @@ public class EON_QFDDM_NOTG implements RA {
         }
         ArrayList<Flow> interuptedFlows = new ArrayList<Flow>(cp.getInteruptedFlows());
         ArrayList<Flow> allFlows = new ArrayList<Flow>();
+        
+        for (Flow f : interuptedFlows){
+            if (f.getPaths().length<1){
+                contador++;
+            }
+        }
+        
         allFlows.addAll(interuptedFlows);
         allFlows.addAll(survivedFlows);
         Comparator<Flow> comparator = new Comparator<Flow>() {
@@ -303,10 +331,11 @@ public class EON_QFDDM_NOTG implements RA {
         };
      //   System.out.println(allFlows.size());
         while (allFlows.size() > 0) {
-            System.out.println(((EONPhysicalTopology) cp.getPT()).getAvailableSlots());
+            //System.out.println(((EONPhysicalTopology) cp.getPT()).getAvailableSlots());
             Collections.sort(allFlows, comparator);
             Flow flow = allFlows.get(0);
          //   System.out.println("É possível? = " + checkPath(flow));
+            
             if (checkPath(flow)) {
                 if(interuptedFlows.contains(flow))
                 {
@@ -319,6 +348,11 @@ public class EON_QFDDM_NOTG implements RA {
                 allFlows.remove(flow);
             }
         }
+        semrotatotal += contador;
+        System.out.println("Conexoes sem rota total: " +semrotatotal);
+        contador = 0;
+        frag = getNetworkFragmentation();
+        System.out.println("Fragmentacao final do evento: " +frag+"%");
     }
 
 
@@ -328,10 +362,14 @@ public class EON_QFDDM_NOTG implements RA {
         Boolean status;
         int[] links;
 
-        if (flow.getPaths() == null) {
+        //if (flow.getPaths() == null) {
             ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(getPostDisasterGraph(cp.getPT()), flow.getSource(), flow.getDestination(), 3);
             flow.setPaths(paths);
-        }
+            
+            if (paths.length == 0) {
+                contador++; 
+            }
+        //}
 
         OUTER:
         for (ArrayList<Integer> path : flow.getPaths()) {

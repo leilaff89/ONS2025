@@ -31,14 +31,17 @@ import ons.util.Model;
  * @author Gab
  */
 public class EON_QFDDM implements RA{
-
+    
+    int semrotatotal = 0;
     private ControlPlaneForRA cp;
-    private WeightedGraph graph;    
+    private WeightedGraph graph; 
+    private PhysicalTopology pt;
     
     @Override
     public void simulationInterface(ControlPlaneForRA cp) {
         this.cp = cp;
-        this.graph = cp.getPT().getWeightedGraph();           
+        this.graph = cp.getPT().getWeightedGraph(); 
+        this.pt = cp.getPT();
     }
     
     private WeightedGraph getPostDisasterGraph(PhysicalTopology pt){
@@ -240,7 +243,21 @@ public class EON_QFDDM implements RA{
 
         return false;
        
-    }  
+    } 
+    
+    public Double getNetworkFragmentation()
+    {
+        int slots_total = -1;
+        int slots_cont = -1;
+        int qtdLinks = pt.getNumLinks();
+        for(int i = 0; i<qtdLinks;i++)
+        {
+            slots_total += ((EONLink) pt.getLink(i)).getAvaiableSlots();
+            slots_cont += ((EONLink) pt.getLink(i)).maxSizeAvaiable();
+        }
+
+        return (1-((double)slots_cont/(double)slots_total))*100;
+    }
    
    
     @Override
@@ -252,7 +269,8 @@ public class EON_QFDDM implements RA{
     public void disasterArrival(DisasterArea area) {
         DBManager.truncate();
         DBManager.activate(0);
-       
+        int contador = 0;
+        double frag = 0;
         TrafficGenerator.eventNum = (TrafficGenerator.eventNum + 1)%4;
        
         ArrayList<Flow> survivedFlows = cp.getMappedFlowsAsList();
@@ -321,26 +339,37 @@ public class EON_QFDDM implements RA{
                         flows.remove(f);
                         model.remove(teste);
                         break;*/
-                       
+                    //if(f.getPaths().length<1){
+                        //contador++;
+                    //}
           /*}else*/ if(teste.getLinks() == null){
-
+                    //if(f.getPaths().length<1){
+                        contador++;
                         if(f.isDelayTolerant()){
-                            DBManager.writeResult(f, 4);
                             cp.delayFlow(f);
+                            DBManager.writeResult(f, 4);
                         }else{
-                            DBManager.writeResult(f, 3);
                             cp.dropFlow(f);
+                            DBManager.writeResult(f, 3);
                         }
                         flows.remove(f);
                         model.remove(teste);
+                       
+                        DBManager.truncate();
+                        DBManager.writePT(cp);
                         DBManager.activate(3);
                         break;
                    
                     }else if (addLightPath2(f,teste.getLinks(),teste.getFirstSlot(),teste.getReqSlotsRestauration(),teste.getModulation())){
+                        
                         cp.restoreFlow(f);
+                        f.updateTransmittedBw();
                         DBManager.writeResult(f, 1);
                         flows.remove(f);
                         model.remove(teste);
+                        
+                        DBManager.truncate();
+                        DBManager.writePT(cp);
                         DBManager.activate(3);
                         break;
                            
@@ -355,16 +384,22 @@ public class EON_QFDDM implements RA{
                         }
                         flows.remove(f);
                         model.remove(teste);
+                        
+                        DBManager.truncate();
+                        DBManager.writePT(cp);
                         DBManager.activate(3);
-                    }
-                       
-                    f.updateTransmittedBw();                    
-                    
-                    break;
+                        
+                        break;
+                    }                  
                                     
                 }
+                //break;
             }
-        } 
+        }
+        semrotatotal += contador;
+        System.out.println("Conexões sem rota total: " +semrotatotal);
+        frag = getNetworkFragmentation();
+        System.out.println("Fragmentacao final do evento: " +frag+"%");
         while(DBManager.waitSim() != 4){} 
     }
    

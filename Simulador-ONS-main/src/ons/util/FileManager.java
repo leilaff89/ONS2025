@@ -58,7 +58,7 @@ public class FileManager {
             StreamResult result = new StreamResult(arquivoXML);
             transformer.transform(source, result);
 
-            System.out.println("Alterações feitas com sucesso!");
+            //System.out.println("Alterações feitas com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
         }
